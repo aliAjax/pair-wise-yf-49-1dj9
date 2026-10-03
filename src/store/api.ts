@@ -1,12 +1,30 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { Evidence } from "../types";
+import type { CourtDoc } from "./courtSlice";
+
 const KEY = "pair-wise-yf-49/court";
+
+interface StoredShape extends Partial<CourtDoc> {
+  /** 旧版仅保存证据数组时的字段 */
+  evidence?: CourtDoc["evidence"];
+}
+
 export const courtApi = createApi({
   reducerPath: "courtApi",
   baseQuery: fakeBaseQuery(),
   endpoints: (builder) => ({
-    getEvidence: builder.query<Evidence[], void>({ queryFn: async () => { const raw = localStorage.getItem(KEY); return { data: raw ? JSON.parse(raw).evidence : [] }; } }),
-    saveEvidence: builder.mutation<{ ok: true }, Evidence[]>({ queryFn: async (payload) => { const raw = localStorage.getItem(KEY); const current = raw ? JSON.parse(raw) : {}; localStorage.setItem(KEY, JSON.stringify({ ...current, evidence: payload })); return { data: { ok: true } }; } })
+    getCourtDoc: builder.query<StoredShape | null, void>({
+      queryFn: async () => {
+        const raw = localStorage.getItem(KEY);
+        return { data: raw ? (JSON.parse(raw) as StoredShape) : null };
+      }
+    }),
+    saveCourtDoc: builder.mutation<{ ok: true }, CourtDoc>({
+      queryFn: async (doc) => {
+        localStorage.setItem(KEY, JSON.stringify(doc));
+        return { data: { ok: true } };
+      }
+    })
   })
 });
-export const { useGetEvidenceQuery, useSaveEvidenceMutation } = courtApi;
+
+export const { useGetCourtDocQuery, useSaveCourtDocMutation } = courtApi;

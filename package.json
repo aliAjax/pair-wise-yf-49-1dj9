@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 62014",
     "build": "tsc -b && vite build",
+    "test:leases": "esbuild scripts/lease-scenarios.ts scripts/slice-e2e.ts --bundle --platform=node --format=esm --outdir=node_modules/.cache/lease-tests && node node_modules/.cache/lease-tests/lease-scenarios.js && node node_modules/.cache/lease-tests/slice-e2e.js",
     "preview": "vite preview --host 0.0.0.0 --port 62014"
   },
   "dependencies": {
